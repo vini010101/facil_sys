@@ -34,7 +34,7 @@ Clone o repositório:
 bash
 Copiar
 Editar
-git clone <URL_DO_REPOSITORIO>
+git clone https://github.com/vini010101/facil_sys
 cd FacilSys
 Crie um ambiente virtual e ative:
 
