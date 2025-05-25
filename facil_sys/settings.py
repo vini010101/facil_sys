@@ -25,7 +25,9 @@ SECRET_KEY = 'django-insecure-*6oq6z60!*l$ljsbj8=l@78t*!+1-%f%d#^+d@5mm#ci#^wo@i
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
+
+CORS_ALLOW_ALL_ORIGINS = True
 
 
 # Application definition
@@ -33,6 +35,7 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'facil_sys_app',
     'rest_framework',
+    'corsheaders',
     'rest_framework.authtoken',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -43,6 +46,8 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',  #retirar esse trecho de codigo que permite aceitar requisiçoes de qualquer origem, é apenas para teste
+    'django.middleware.common.CommonMiddleware', #retirar esse trecho de codigo que permite aceitar requisiçoes de qualquer origem, é apenas para teste
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
