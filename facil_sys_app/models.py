@@ -65,6 +65,8 @@ def sincronizar_usuario(sender, instance, created, **kwargs):
         usuario.save()
 
 
+
+
 class ArtigoConhecimento(models.Model):
     CATEGORIAS = [
         ('TREINAMENTO', 'Treinamento'),
@@ -83,3 +85,4 @@ class ArtigoConhecimento(models.Model):
 
     def __str__(self):
         return f"{self.titulo} ({self.get_categoria_display()})"
+    

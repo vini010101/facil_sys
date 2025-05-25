@@ -3,10 +3,19 @@ from rest_framework.response import Response
 from django.contrib.auth import authenticate, login as auth_login
 from rest_framework import status
 from django.contrib.auth.models import User
+from rest_framework.decorators import api_view, parser_classes
+from rest_framework.parsers import JSONParser
+from rest_framework.response import Response
+from rest_framework import status
+from .models import ArtigoConhecimento
+from .serializers import ArtigoConhecimentoSerializer
+from django.views.decorators.csrf import csrf_exempt
+
 
 
 #essa rota é responsavel por realizar o registro de um novo usuario
 @api_view(['POST'])
+@parser_classes([JSONParser])
 def register_user(request):
     username = request.data.get('username')
     password = request.data.get('password')
@@ -29,6 +38,8 @@ def register_user(request):
 
 #essa rota é responsavel por realizar o login de um usuario
 @api_view(['POST'])
+@parser_classes([JSONParser])
+@csrf_exempt
 def login_user(request):
     username = request.data.get('username')
     password = request.data.get('password')
@@ -41,3 +52,64 @@ def login_user(request):
     else:
         return Response({'detail': 'Credenciais inválidas'}, status=401)
 
+
+
+
+
+
+
+@api_view(['GET', 'POST'])
+@parser_classes([JSONParser])
+@csrf_exempt
+def artigos_conhecimento_view(request):
+    if request.method == 'GET':
+        artigos = ArtigoConhecimento.objects.all().order_by('-data_criacao')
+        data = []
+        for artigo in artigos:
+            data.append({
+                'id': artigo.id,
+                'titulo': artigo.titulo,
+                'conteudo': artigo.conteudo,
+                'categoria': artigo.categoria,
+                'autor': artigo.autor.username if artigo.autor else None,
+                'data_criacao': artigo.data_criacao,
+                'data_atualizacao': artigo.data_atualizacao,
+                'anexo': artigo.anexo.url if artigo.anexo else None,
+            })
+        return Response(data)
+
+    elif request.method == 'POST':
+        data = request.data
+
+        # Validação manual dos campos obrigatórios
+        titulo = data.get('titulo')
+        conteudo = data.get('conteudo')
+        categoria = data.get('categoria')
+
+        if not titulo or not conteudo or not categoria:
+            return Response({'error': 'Campos titulo, conteudo e categoria são obrigatórios.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Validar categoria entre as opções válidas
+        categorias_validas = [c[0] for c in ArtigoConhecimento.CATEGORIAS]
+        if categoria not in categorias_validas:
+            return Response({'error': f'Categoria inválida. Opções válidas: {categorias_validas}'}, status=status.HTTP_400_BAD_REQUEST)
+
+        autor = request.user if request.user.is_authenticated else None
+
+        artigo = ArtigoConhecimento.objects.create(
+            titulo=titulo,
+            conteudo=conteudo,
+            categoria=categoria,
+            autor=autor,
+        )
+
+        # Não tratei arquivo (anexo) aqui, só JSON puro
+
+        return Response({
+            'id': artigo.id,
+            'titulo': artigo.titulo,
+            'conteudo': artigo.conteudo,
+            'categoria': artigo.categoria,
+            'autor': artigo.autor.username if artigo.autor else None,
+            'data_criacao': artigo.data_criacao,
+        }, status=status.HTTP_201_CREATED)
