@@ -86,3 +86,22 @@ class ArtigoConhecimento(models.Model):
     def __str__(self):
         return f"{self.titulo} ({self.get_categoria_display()})"
     
+
+
+
+class ModuloTreinamento(models.Model):
+    nome = models.CharField(max_length=255)
+
+class ConteudoTreinamento(models.Model):
+    TIPOS = [
+        ('texto', 'Texto'),
+        ('video', 'Vídeo'),
+        ('pdf', 'PDF'),
+    ]
+
+    modulo = models.ForeignKey(ModuloTreinamento, on_delete=models.CASCADE, related_name='conteudos')
+    tipo = models.CharField(max_length=10, choices=TIPOS)
+    titulo = models.CharField(max_length=255)
+    texto = models.TextField(blank=True, null=True)
+    arquivo = models.FileField(upload_to='treinamentos/', blank=True, null=True)
+    data_criacao = models.DateTimeField(auto_now_add=True)

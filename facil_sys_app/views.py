@@ -7,8 +7,9 @@ from rest_framework.decorators import api_view, parser_classes
 from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
 from rest_framework import status
-from .models import ArtigoConhecimento
+from .models import ArtigoConhecimento, ConteudoTreinamento, ModuloTreinamento
 from django.views.decorators.csrf import csrf_exempt
+from rest_framework.parsers import MultiPartParser, FormParser
 
 
 
@@ -111,4 +112,69 @@ def artigos_conhecimento_view(request):
             'categoria': artigo.categoria,
             'autor': artigo.autor.username if artigo.autor else None,
             'data_criacao': artigo.data_criacao,
+        }, status=status.HTTP_201_CREATED)
+    
+
+
+
+
+
+
+
+
+@api_view(['GET', 'POST'])
+@parser_classes([MultiPartParser, FormParser])
+@csrf_exempt
+def conteudo_treinamento_view(request, modulo_id):
+    try:
+        modulo = ModuloTreinamento.objects.get(pk=modulo_id)
+    except ModuloTreinamento.DoesNotExist:
+        return Response({'error': 'Módulo não encontrado.'}, status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'GET':
+        conteudos = modulo.conteudos.all().order_by('-data_criacao')
+        data = []
+        for c in conteudos:
+            data.append({
+                'id': c.id,
+                'modulo_id': modulo.id,
+                'tipo': c.tipo,
+                'titulo': c.titulo,
+                'texto': c.texto,
+                'arquivo': c.arquivo.url if c.arquivo else None,
+                'data_criacao': c.data_criacao,
+            })
+        return Response(data)
+
+    elif request.method == 'POST':
+        tipo = request.data.get('tipo')
+        titulo = request.data.get('titulo')
+        texto = request.data.get('texto')
+        arquivo = request.FILES.get('arquivo')
+
+        if not tipo or not titulo:
+            return Response({'error': 'Campos tipo e titulo são obrigatórios.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        tipos_validos = [t[0] for t in ConteudoTreinamento.TIPOS]
+        if tipo not in tipos_validos:
+            return Response({'error': f'Tipo inválido. Opções: {tipos_validos}'}, status=status.HTTP_400_BAD_REQUEST)
+
+        if tipo in ['video', 'pdf'] and not arquivo:
+            return Response({'error': 'Arquivo é obrigatório para tipo vídeo ou pdf.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        conteudo = ConteudoTreinamento.objects.create(
+            modulo=modulo,
+            tipo=tipo,
+            titulo=titulo,
+            texto=texto if tipo == 'texto' else None,
+            arquivo=arquivo if tipo in ['video', 'pdf'] else None,
+        )
+
+        return Response({
+            'id': conteudo.id,
+            'tipo': conteudo.tipo,
+            'titulo': conteudo.titulo,
+            'texto': conteudo.texto,
+            'arquivo': conteudo.arquivo.url if conteudo.arquivo else None,
+            'data_criacao': conteudo.data_criacao,
         }, status=status.HTTP_201_CREATED)
