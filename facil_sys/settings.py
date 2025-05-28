@@ -29,10 +29,28 @@ ALLOWED_HOSTS = ['*']
 
 CORS_ALLOW_ALL_ORIGINS = True
 
+SITE_ID = 1
 
+WAGTAIL_SITE_NAME = "FacilSys"
 # Application definition
 
 INSTALLED_APPS = [
+   # apps Wagtail obrigatórios e recomendados
+    'wagtail.contrib.forms',
+    'wagtail.contrib.redirects',
+    'wagtail.embeds',
+    'wagtail.sites',
+    'wagtail.users',
+    'wagtail.snippets',
+    'wagtail.documents',
+    'wagtail.images',
+    'wagtail.search',
+    'wagtail.admin',
+    'wagtail',  # app principal Wagtail
+
+    'modelcluster',
+    'taggit',
+    'core',
     'facil_sys_app',
     'rest_framework',
     'corsheaders',
@@ -48,6 +66,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',  #retirar esse trecho de codigo que permite aceitar requisiçoes de qualquer origem, é apenas para teste
     'django.middleware.common.CommonMiddleware', #retirar esse trecho de codigo que permite aceitar requisiçoes de qualquer origem, é apenas para teste
+     'wagtail.contrib.redirects.middleware.RedirectMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',

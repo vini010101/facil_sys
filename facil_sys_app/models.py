@@ -8,6 +8,11 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 
 
+
+
+
+
+
 class UsuarioManager(BaseUserManager):
     def ativo(self):
         return self.filter(ativo=True)
@@ -97,3 +102,31 @@ class Treinamento(models.Model):
     conteudo = models.TextField(null=True, blank=True)  # Texto ou descrição
     arquivo = models.FileField(upload_to='treinamentos/', null=True, blank=True)
     criado_em = models.DateTimeField(auto_now_add=True)
+
+
+
+from django.db import models
+from wagtail.models import Page
+from wagtail.admin.panels import FieldPanel
+
+class ConteudoTreinamentoPage(Page):
+    modulo = models.CharField(max_length=255)
+    titulo = models.CharField(max_length=255)
+    conteudo = models.TextField(blank=True)
+    arquivo = models.FileField(upload_to='treinamentos/', blank=True, null=True)
+    tipo = models.CharField(
+        max_length=50,
+        choices=[
+            ('texto', 'Texto'),
+            ('video', 'Vídeo'),
+            ('pdf', 'PDF'),
+        ]
+    )
+
+    content_panels = Page.content_panels + [
+        FieldPanel('modulo'),
+        FieldPanel('titulo'),
+        FieldPanel('tipo'),
+        FieldPanel('conteudo'),
+        FieldPanel('arquivo'),
+    ]
