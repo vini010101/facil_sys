@@ -46,11 +46,10 @@ INSTALLED_APPS = [
     'wagtail.images',
     'wagtail.search',
     'wagtail.admin',
+    "wagtail_modeladmin",
     'wagtail',  # app principal Wagtail
-
     'modelcluster',
     'taggit',
-    'core',
     'facil_sys_app',
     'rest_framework',
     'corsheaders',
