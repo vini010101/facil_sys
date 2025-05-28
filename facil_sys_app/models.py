@@ -89,19 +89,11 @@ class ArtigoConhecimento(models.Model):
 
 
 
-class ModuloTreinamento(models.Model):
-    nome = models.CharField(max_length=255)
+class Treinamento(models.Model):
+    TIPOS = [('texto', 'Texto'), ('video', 'Vídeo'), ('pdf', 'PDF')]
 
-class ConteudoTreinamento(models.Model):
-    TIPOS = [
-        ('texto', 'Texto'),
-        ('video', 'Vídeo'),
-        ('pdf', 'PDF'),
-    ]
-
-    modulo = models.ForeignKey(ModuloTreinamento, on_delete=models.CASCADE, related_name='conteudos')
-    tipo = models.CharField(max_length=10, choices=TIPOS)
+    modulo = models.CharField(max_length=255)  # Nome do módulo como string simples
     titulo = models.CharField(max_length=255)
-    texto = models.TextField(blank=True, null=True)
-    arquivo = models.FileField(upload_to='treinamentos/', blank=True, null=True)
-    data_criacao = models.DateTimeField(auto_now_add=True)
+    conteudo = models.TextField(null=True, blank=True)  # Texto ou descrição
+    arquivo = models.FileField(upload_to='treinamentos/', null=True, blank=True)
+    criado_em = models.DateTimeField(auto_now_add=True)

@@ -7,7 +7,7 @@ from rest_framework.decorators import api_view, parser_classes
 from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
 from rest_framework import status
-from .models import ArtigoConhecimento, ConteudoTreinamento, ModuloTreinamento
+from .models import ArtigoConhecimento, Treinamento
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.parsers import MultiPartParser, FormParser
 
@@ -121,60 +121,50 @@ def artigos_conhecimento_view(request):
 
 
 
-
 @api_view(['GET', 'POST'])
 @parser_classes([MultiPartParser, FormParser])
 @csrf_exempt
-def conteudo_treinamento_view(request, modulo_id):
-    try:
-        modulo = ModuloTreinamento.objects.get(pk=modulo_id)
-    except ModuloTreinamento.DoesNotExist:
-        return Response({'error': 'Módulo não encontrado.'}, status=status.HTTP_404_NOT_FOUND)
-
+def treinamento_view(request):
     if request.method == 'GET':
-        conteudos = modulo.conteudos.all().order_by('-data_criacao')
+        modulo_nome = request.query_params.get('modulo')
+        if not modulo_nome:
+            return Response({'error': 'Parâmetro "modulo" é obrigatório.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        conteudos = Treinamento.objects.filter(modulo=modulo_nome).order_by('-criado_em')
         data = []
         for c in conteudos:
             data.append({
                 'id': c.id,
-                'modulo_id': modulo.id,
-                'tipo': c.tipo,
+                'modulo': c.modulo,
                 'titulo': c.titulo,
-                'texto': c.texto,
+                'conteudo': c.conteudo,
                 'arquivo': c.arquivo.url if c.arquivo else None,
-                'data_criacao': c.data_criacao,
+                'criado_em': c.criado_em,
             })
         return Response(data)
 
     elif request.method == 'POST':
-        tipo = request.data.get('tipo')
+        modulo = request.data.get('modulo')
         titulo = request.data.get('titulo')
-        texto = request.data.get('texto')
+        conteudo = request.data.get('conteudo')
         arquivo = request.FILES.get('arquivo')
 
-        if not tipo or not titulo:
-            return Response({'error': 'Campos tipo e titulo são obrigatórios.'}, status=status.HTTP_400_BAD_REQUEST)
+        if not all([modulo, titulo]):
+            return Response({'error': 'Campos "modulo" e "titulo" são obrigatórios.'}, status=status.HTTP_400_BAD_REQUEST)
 
-        tipos_validos = [t[0] for t in ConteudoTreinamento.TIPOS]
-        if tipo not in tipos_validos:
-            return Response({'error': f'Tipo inválido. Opções: {tipos_validos}'}, status=status.HTTP_400_BAD_REQUEST)
-
-        if tipo in ['video', 'pdf'] and not arquivo:
-            return Response({'error': 'Arquivo é obrigatório para tipo vídeo ou pdf.'}, status=status.HTTP_400_BAD_REQUEST)
-
-        conteudo = ConteudoTreinamento.objects.create(
+        # Criando sem o campo tipo, assumindo valor padrão
+        novo = Treinamento.objects.create(
             modulo=modulo,
-            tipo=tipo,
             titulo=titulo,
-            texto=texto if tipo == 'texto' else None,
-            arquivo=arquivo if tipo in ['video', 'pdf'] else None,
+            conteudo=conteudo,
+            arquivo=arquivo,
         )
 
         return Response({
-            'id': conteudo.id,
-            'tipo': conteudo.tipo,
-            'titulo': conteudo.titulo,
-            'texto': conteudo.texto,
-            'arquivo': conteudo.arquivo.url if conteudo.arquivo else None,
-            'data_criacao': conteudo.data_criacao,
+            'id': novo.id,
+            'modulo': novo.modulo,
+            'titulo': novo.titulo,
+            'conteudo': novo.conteudo,
+            'arquivo': novo.arquivo.url if novo.arquivo else None,
+            'criado_em': novo.criado_em,
         }, status=status.HTTP_201_CREATED)
