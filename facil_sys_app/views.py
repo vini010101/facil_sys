@@ -126,11 +126,9 @@ def artigos_conhecimento_view(request):
 @csrf_exempt
 def treinamento_view(request):
     if request.method == 'GET':
-        modulo_nome = request.query_params.get('modulo')
-        if not modulo_nome:
-            return Response({'error': 'Parâmetro "modulo" é obrigatório.'}, status=status.HTTP_400_BAD_REQUEST)
+      
 
-        conteudos = Treinamento.objects.filter(modulo=modulo_nome).order_by('-criado_em')
+        conteudos = Treinamento.objects.all().order_by('-criado_em')
         data = []
         for c in conteudos:
             data.append({

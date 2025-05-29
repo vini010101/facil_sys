@@ -4,7 +4,7 @@ from .models import ArtigoConhecimento, Treinamento
 
 class ArtigoConhecimentoAdmin(ModelAdmin):
     model = ArtigoConhecimento
-    menu_label = 'Artigos'
+    menu_label = 'Editar SYS'
     menu_icon = 'doc-full'
     list_display = ('titulo', 'categoria', 'autor', 'data_criacao')
     search_fields = ('titulo', 'conteudo', 'categoria')
@@ -13,7 +13,7 @@ class ArtigoConhecimentoAdmin(ModelAdmin):
 
 class TreinamentoAdmin(ModelAdmin):
     model = Treinamento
-    menu_label = 'Treinamentos'
+    menu_label = 'Editar Treinamentos'
     menu_icon = 'folder-open-inverse'
     list_display = ('modulo', 'titulo', 'criado_em')
     search_fields = ('modulo', 'titulo')
