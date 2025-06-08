@@ -1,5 +1,9 @@
 from django.db import models
-
+from wagtail.fields import StreamField
+from wagtail.admin.panels import FieldPanel
+from wagtail import blocks
+from wagtail.images.blocks import ImageChooserBlock
+from wagtail.embeds.blocks import EmbedBlock
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, User
 from django.db import models
 from django.utils import timezone
@@ -95,11 +99,21 @@ class ArtigoConhecimento(models.Model):
 
 
 class Treinamento(models.Model):
-    TIPOS = [('texto', 'Texto'), ('video', 'Vídeo'), ('pdf', 'PDF')]
+    modulo = models.CharField(max_length=100)
+    titulo = models.CharField(max_length=200)
+    conteudo = StreamField([
+        ('paragrafo', blocks.RichTextBlock(features=['bold', 'italic', 'link', 'ul', 'ol'])),
+        ('imagem', ImageChooserBlock()),
+        ('video', EmbedBlock()),
+    ], use_json_field=True, default=list, blank=True)
 
-    modulo = models.CharField(max_length=255)  # Nome do módulo como string simples
-    titulo = models.CharField(max_length=255)
-    conteudo = models.TextField(null=True, blank=True)  # Texto ou descrição
-    arquivo = models.FileField(upload_to='treinamentos/', null=True, blank=True)
     criado_em = models.DateTimeField(auto_now_add=True)
 
+    panels = [
+        FieldPanel('modulo'),
+        FieldPanel('titulo'),
+        FieldPanel('conteudo'),
+    ]
+
+    def __str__(self):
+        return f'{self.modulo} - {self.titulo}'

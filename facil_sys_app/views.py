@@ -120,14 +120,11 @@ def artigos_conhecimento_view(request):
 
 
 
-
 @api_view(['GET', 'POST'])
 @parser_classes([MultiPartParser, FormParser])
 @csrf_exempt
 def treinamento_view(request):
     if request.method == 'GET':
-      
-
         conteudos = Treinamento.objects.all().order_by('-criado_em')
         data = []
         for c in conteudos:
@@ -135,8 +132,7 @@ def treinamento_view(request):
                 'id': c.id,
                 'modulo': c.modulo,
                 'titulo': c.titulo,
-                'conteudo': c.conteudo,
-                'arquivo': c.arquivo.url if c.arquivo else None,
+                'conteudo': str(c.conteudo),  # converte StreamValue para string (HTML)
                 'criado_em': c.criado_em,
             })
         return Response(data)
@@ -150,11 +146,15 @@ def treinamento_view(request):
         if not all([modulo, titulo]):
             return Response({'error': 'Campos "modulo" e "titulo" são obrigatórios.'}, status=status.HTTP_400_BAD_REQUEST)
 
-        # Criando sem o campo tipo, assumindo valor padrão
+        # Aqui, atenção: se o campo conteudo é um StreamField no modelo,
+        # para criar é necessário passar o valor correto,
+        # normalmente um JSON ou um dict que o StreamField entende.
+        # Se for texto simples, pode não funcionar, depende do campo.
+
         novo = Treinamento.objects.create(
             modulo=modulo,
             titulo=titulo,
-            conteudo=conteudo,
+            conteudo=conteudo,  # garanta que conteudo está no formato esperado pelo StreamField
             arquivo=arquivo,
         )
 
@@ -162,7 +162,7 @@ def treinamento_view(request):
             'id': novo.id,
             'modulo': novo.modulo,
             'titulo': novo.titulo,
-            'conteudo': novo.conteudo,
+            'conteudo': str(novo.conteudo),
             'arquivo': novo.arquivo.url if novo.arquivo else None,
             'criado_em': novo.criado_em,
         }, status=status.HTTP_201_CREATED)
