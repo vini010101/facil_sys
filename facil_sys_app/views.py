@@ -7,7 +7,7 @@ from rest_framework.decorators import api_view, parser_classes
 from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
 from rest_framework import status
-from .models import ArtigoConhecimento, Treinamento
+from .models import ArtigoConhecimento, Treinamento, Convenios
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.parsers import MultiPartParser, FormParser
 
@@ -162,6 +162,49 @@ def treinamento_view(request):
             'id': novo.id,
             'modulo': novo.modulo,
             'titulo': novo.titulo,
+            'conteudo': str(novo.conteudo),
+            'arquivo': novo.arquivo.url if novo.arquivo else None,
+            'criado_em': novo.criado_em,
+        }, status=status.HTTP_201_CREATED)
+    
+
+
+@api_view(['GET', 'POST'])
+@parser_classes([MultiPartParser, FormParser])
+@csrf_exempt
+def convenio_view(request):
+    if request.method == 'GET':
+        conteudos = Convenios.objects.all().order_by('-criado_em')
+        data = []
+        for c in conteudos:
+            data.append({
+                'id': c.id,
+                'nome': c.nome,
+                'conteudo': str(c.conteudo),  # converte StreamValue para string (HTML)
+                'criado_em': c.criado_em,
+            })
+        return Response(data)
+
+    elif request.method == 'POST':
+        nome = request.data.get('nome')
+        conteudo = request.data.get('conteudo')
+        arquivo = request.FILES.get('arquivo')
+
+
+        # Aqui, atenção: se o campo conteudo é um StreamField no modelo,
+        # para criar é necessário passar o valor correto,
+        # normalmente um JSON ou um dict que o StreamField entende.
+        # Se for texto simples, pode não funcionar, depende do campo.
+
+        novo = Convenios.objects.create(
+            nome=nome,
+            conteudo=conteudo,  # garanta que conteudo está no formato esperado pelo StreamField
+            arquivo=arquivo,
+        )
+
+        return Response({
+            'id': novo.id,
+            'nome': novo.nome,
             'conteudo': str(novo.conteudo),
             'arquivo': novo.arquivo.url if novo.arquivo else None,
             'criado_em': novo.criado_em,

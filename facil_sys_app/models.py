@@ -117,3 +117,24 @@ class Treinamento(models.Model):
 
     def __str__(self):
         return f'{self.modulo} - {self.titulo}'
+
+
+
+
+class Convenios(models.Model):
+    nome = models.CharField(max_length=100)
+    conteudo = StreamField([
+        ('paragrafo', blocks.RichTextBlock(features=['bold', 'italic', 'link', 'ul', 'ol'])),
+        ('imagem', ImageChooserBlock()),
+        ('video', EmbedBlock()),
+    ], use_json_field=True, default=list, blank=True)
+
+    criado_em = models.DateTimeField(auto_now_add=True)
+
+    panels = [
+        FieldPanel('nome'),
+        FieldPanel('conteudo'),
+    ]
+
+    def __str__(self):
+        return {self.nome} - {self.conteudo}

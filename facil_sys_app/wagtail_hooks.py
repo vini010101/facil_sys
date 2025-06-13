@@ -1,5 +1,5 @@
 from wagtail_modeladmin.options import ModelAdmin, modeladmin_register
-from .models import ArtigoConhecimento, Treinamento
+from .models import ArtigoConhecimento, Treinamento, Convenios
 
 
 class ArtigoConhecimentoAdmin(ModelAdmin):
@@ -20,6 +20,15 @@ class TreinamentoAdmin(ModelAdmin):
     ordering = ['-criado_em']
 
 
+class Convenios(ModelAdmin):
+   model = Convenios
+   menu_label = 'Editar Convenios'
+   menu_icon = 'folder-open-inverse'
+   list_display = ('nome', 'conteudo', 'criado_em')
+   search_fields = ('nome', 'conteudo')
+   ordering = ['-criado_em']  
+
 # Registrar os modelos no admin do Wagtail
 modeladmin_register(ArtigoConhecimentoAdmin)
 modeladmin_register(TreinamentoAdmin)
+modeladmin_register(Convenios)
