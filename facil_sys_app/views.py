@@ -5,11 +5,10 @@ from rest_framework import status
 from django.contrib.auth.models import User
 from rest_framework.decorators import api_view, parser_classes
 from rest_framework.parsers import JSONParser
-from rest_framework.response import Response
-from rest_framework import status
 from .models import ArtigoConhecimento, Treinamento, Convenios
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.parsers import MultiPartParser, FormParser
+from django.db.models import Q
 
 
 
@@ -63,7 +62,16 @@ def login_user(request):
 @csrf_exempt
 def artigos_conhecimento_view(request):
     if request.method == 'GET':
-        artigos = ArtigoConhecimento.objects.all().order_by('-data_criacao')
+        termo =  request.GET.get('q', ' ').strip().lower()
+
+        if termo:
+            artigo = ArtigoConhecimento.objects.filter(
+                Q(titulo__icontains=termo) |
+                Q(conteudo__icontains=termo)
+            ).order_by('-data_criacao')
+        else:
+            artigos = ArtigoConhecimento.objects.all().order_by('-data_criacao')
+
         data = []
         for artigo in artigos:
             data.append({

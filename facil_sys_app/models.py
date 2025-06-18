@@ -137,4 +137,4 @@ class Convenios(models.Model):
     ]
 
     def __str__(self):
-        return {self.nome} - {self.conteudo}
+        return str(self.nome)
