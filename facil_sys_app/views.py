@@ -65,7 +65,7 @@ def artigos_conhecimento_view(request):
         termo =  request.GET.get('q', ' ').strip().lower()
 
         if termo:
-            artigo = ArtigoConhecimento.objects.filter(
+            artigos = ArtigoConhecimento.objects.filter(
                 Q(titulo__icontains=termo) |
                 Q(conteudo__icontains=termo)
             ).order_by('-data_criacao')
