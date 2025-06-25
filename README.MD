@@ -1,71 +1,81 @@
-FacilSys
-FacilSys é uma ferramenta interna desenvolvida para os colaboradores da Fácil Tecnologia. Seu principal objetivo é centralizar e organizar a consulta aos sistemas internos, promovendo uma navegação mais rápida, intuitiva e dinâmica.
+# 🛠️ FacilSys – Plataforma Interna para Suporte Técnico
 
-Objetivo
-Melhorar a eficiência do suporte técnico e das operações internas ao oferecer:
+**FacilSys** é um sistema interno desenvolvido para **centralizar o conhecimento técnico**, melhorar a **autonomia dos técnicos de suporte** e **padronizar procedimentos operacionais** dentro da empresa **Fácil Tecnologia**.
 
-Acesso rápido e estruturado às funcionalidades dos sistemas da empresa;
+---
 
-Interface simples e responsiva para facilitar o uso no dia a dia;
+## 📌 Sobre o Projeto
 
-Ponto central para visualização, autenticação e registro de informações operacionais.
+Durante minha atuação como Técnico de Suporte N1, observei problemas recorrentes na rotina de atendimento:
 
-Tecnologias Utilizadas
-Backend: Django + Django REST Framework
+- Repetição constante de dúvidas operacionais
+- Falta de uma central de consulta rápida e confiável
+- Documentação dispersa ou inexistente
+- Perda de tempo e produtividade por falta de padronização
 
-Frontend: (A ser definido, ou deixar vazio se for só backend)
+O **FacilSys** foi criado para resolver esses problemas, permitindo que os técnicos consultem **tutoriais, normas e sistemas internos** de forma rápida e intuitiva.
 
-Banco de Dados: SQLite (para testes) / MySQL (em produção)
+---
 
-Autenticação: Sistema padrão do Django
+## 🎯 Funcionalidades
 
-Funcionalidades
-Autenticação de usuários via API REST
+- ✅ Cadastro e exibição de artigos técnicos
+- ✅ Filtro por categoria, data, autor e palavras-chave
+- ✅ Área de sistemas internos com links e descrições
+- ✅ Busca dinâmica por título ou conteúdo
+- ✅ Painel administrativo com autenticação
+- ✅ Interface leve e responsiva
+  ✅ envio automatico de E-mail com atulização sobre Normal e Treinametos para os colaboradores ( Em Desenvolvimento )
 
-Registro de novos colaboradores
+---
 
-Respostas padronizadas em JSON
+## ⚙️ Tecnologias Utilizadas
 
-Base inicial para integração com sistemas internos
+| Camada         | Tecnologia               |
+|----------------|--------------------------|
+| Backend        | Python + Django          |
+| Banco de Dados | SQLite (versão inicial)  |
+| Frontend       | HTML + BootStrap CSS + JS |
+| Deploy         | Docker (em planejamento) |
+| Ambiente       | Projeto local ou VPS     |
 
-Como rodar o projeto
-Clone o repositório:
+---
 
-bash
-Copiar
-Editar
-git clone https://github.com/vini010101/facil_sys
-cd FacilSys
-Crie um ambiente virtual e ative:
+## 🧪 Status do Projeto
 
-bash
-Copiar
-Editar
-python -m venv venv
-source venv/bin/activate
-Instale as dependências:
+✅ Projeto funcional  
+🚧 Implantação na empresa em avaliação  
+🔄 Em constante manutenção e evolução pessoal
 
-bash
-Copiar
-Editar
+---
+
+## 📂 Instalação (modo local)
+
+1. Clone o repositório:
+```bash
+git clone https://github.com/viniciuscalebe/facil_sys.git
+cd facilsys
+
+python3 -m venv .venv
+source .venv/bin/activate
+
 pip install -r requirements.txt
-Execute as migrações:
 
-bash
-Copiar
-Editar
 python manage.py migrate
-Inicie o servidor:
 
-bash
-Copiar
-Editar
 python manage.py runserver
-Endpoints Principais
-POST /api/login/ — Login do colaborador
+Acesse em http://127.0.0.1:8000/
 
-POST /api/register/ — Registro de novo colaborador
 
-Licença
-Projeto interno de uso exclusivo da Fácil Tecnologia.
+👨‍💻 Autor
+Vinicius Calebe Barbosa de Moura
+Desenvolvedor Backend Python
 
+🧠 Lições Aprendidas
+Transformar problemas reais em soluções técnicas práticas
+
+Uso avançado do Django com ORM, views, templates e admin
+
+Organização de código para manutenção e escalabilidade
+
+Comunicação técnica com gestão e apresentação de projetos
